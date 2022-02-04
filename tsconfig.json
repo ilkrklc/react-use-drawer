@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./src/",
+    "rootDir": "src",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "outDir": "./dist",
+    "declaration": true,
+    "strict": true,
+    "jsxFactory": "React.createElement"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "./**/*.js"]
+}
