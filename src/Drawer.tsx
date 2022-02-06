@@ -37,19 +37,16 @@ export function Drawer({
     bottom: '-100%',
   });
 
-  // get root element to create portal
   const rootElement = useMemo<HTMLElement | null>(() => {
     return document.getElementById(rootId);
   }, [rootId]);
 
-  // handles transition end unmounting
   const handleTransitionEnd = useCallback(() => {
     if (open) return;
 
     setShow(false);
   }, [open]);
 
-  // open prop change effect
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined = undefined;
 
@@ -80,7 +77,7 @@ export function Drawer({
           ...baseContainerStyles,
           maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
           bottom: '0px',
-          transition: `transform ${animationDuration * 1000}ms ease-in-out`,
+          transition: `transform ${animationDuration}ms ease-in-out`,
           ...animationStyles,
         }}
         onTransitionEnd={handleTransitionEnd}
