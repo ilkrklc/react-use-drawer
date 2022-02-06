@@ -9,6 +9,12 @@ export const wrapperStyles: CSSProperties = {
   bottom: 0,
   right: 0,
   zIndex: DrawerDefaults.DRAWER_Z_INDEX,
+};
+
+export const overlayStyles: CSSProperties = {
+  height: '100%',
+  width: '100%',
+  zIndex: DrawerDefaults.DRAWER_Z_INDEX + 1,
   backgroundColor: 'transparent',
 };
 
@@ -20,7 +26,7 @@ export const baseContainerStyles: CSSProperties = {
   height: '100%',
   width: '100%',
   boxShadow: '0px 10px 40px 0px rgb(0 0 0 / 80%)',
-  zIndex: DrawerDefaults.DRAWER_Z_INDEX + 1,
+  zIndex: DrawerDefaults.DRAWER_Z_INDEX + 2,
   paddingTop: '1rem',
   paddingBottom: '1rem',
 };

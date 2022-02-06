@@ -11,7 +11,11 @@ import React, {
 import { createPortal } from 'react-dom';
 
 import { DrawerDefaults } from './Drawer.defaults';
-import { wrapperStyles, baseContainerStyles } from './Drawer.styles';
+import {
+  wrapperStyles,
+  baseContainerStyles,
+  overlayStyles,
+} from './Drawer.styles';
 
 export interface DrawerProps {
   animationDuration?: number;
@@ -69,7 +73,8 @@ export function Drawer({
   if (!rootElement) return null;
 
   return createPortal(
-    <div role="dialog" style={wrapperStyles} onClick={onOverlayClick}>
+    <div role="dialog" style={wrapperStyles}>
+      <div onClick={onOverlayClick} style={overlayStyles} />
       <div
         style={{
           ...baseContainerStyles,
