@@ -57,8 +57,5 @@
     "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "typescript": "^4.5.5"
-  },
-  "dependencies": {
-    "use-inject-style": "^1.0.0"
   }
 }
