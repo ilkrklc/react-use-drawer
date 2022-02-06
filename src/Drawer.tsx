@@ -18,6 +18,7 @@ import {
 } from './Drawer.styles';
 
 export interface DrawerProps {
+  anchor?: 'bottom' | 'left' | 'right' | 'top';
   animationDuration?: number;
   children: ReactNode;
   open?: boolean;
@@ -26,16 +27,63 @@ export interface DrawerProps {
 }
 
 export function Drawer({
-  animationDuration = DrawerDefaults.FALLBACK_ANIMATION_DURATION,
+  anchor = 'bottom',
+  animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   children,
   open = false,
   rootId = DrawerDefaults.FALLBACK_ROOT_ID,
   onOverlayClick,
 }: DrawerProps): ReactPortal | null {
+  const parsedAnimationStyles = useMemo<CSSProperties>(() => {
+    const parsedAnimationDuration =
+      animationDuration < DrawerDefaults.ANIMATION_DURATION.MIN
+        ? DrawerDefaults.ANIMATION_DURATION.MIN
+        : animationDuration;
+    const animationDurationDelta = open
+      ? parsedAnimationDuration - DrawerDefaults.ANIMATION_DURATION.DELAY
+      : parsedAnimationDuration;
+    const baseAnimationStyles: CSSProperties = {
+      transition: `transform ${animationDurationDelta}ms ease-in-out`,
+    };
+
+    switch (anchor) {
+      case 'bottom':
+        return {
+          ...baseAnimationStyles,
+          bottom: '0px',
+          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+          transform: `translateY(${open ? '0' : '100%'})`,
+        };
+      case 'left':
+        return {
+          ...baseAnimationStyles,
+          left: '0px',
+          maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
+          transform: `translateX(${open ? '0' : '-100%'})`,
+        };
+      case 'right':
+        return {
+          ...baseAnimationStyles,
+          right: '0px',
+          maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
+          transform: `translateX(${open ? '0' : '100%'})`,
+        };
+      case 'top':
+        return {
+          ...baseAnimationStyles,
+          top: '0px',
+          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+          transform: `translateY(${open ? '0' : '-100%'})`,
+        };
+      default:
+        return { ...baseAnimationStyles };
+    }
+  }, [anchor, animationDuration, open]);
+
   const [show, setShow] = useState<boolean>(false);
-  const [animationStyles, setAnimationStyles] = useState<CSSProperties>({
-    bottom: '-100%',
-  });
+  const [animationStyles, setAnimationStyles] = useState<CSSProperties>(
+    parsedAnimationStyles,
+  );
 
   const rootElement = useMemo<HTMLElement | null>(() => {
     return document.getElementById(rootId);
@@ -51,20 +99,20 @@ export function Drawer({
     let timeout: NodeJS.Timeout | undefined = undefined;
 
     if (!open) {
-      setAnimationStyles({ transform: 'translateY(100%)' });
+      setAnimationStyles(parsedAnimationStyles);
 
       return;
     }
 
     setShow(true);
     timeout = setTimeout(() => {
-      setAnimationStyles({ transform: 'translateY(0)' });
-    }, 25);
+      setAnimationStyles(parsedAnimationStyles);
+    }, DrawerDefaults.ANIMATION_DURATION.DELAY);
 
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [open]);
+  }, [open, parsedAnimationStyles]);
 
   if (!show) return null;
   if (!rootElement) return null;
@@ -75,9 +123,6 @@ export function Drawer({
       <div
         style={{
           ...baseContainerStyles,
-          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
-          bottom: '0px',
-          transition: `transform ${animationDuration}ms ease-in-out`,
           ...animationStyles,
         }}
         onTransitionEnd={handleTransitionEnd}
@@ -90,7 +135,8 @@ export function Drawer({
 }
 
 Drawer.defaultProps = {
-  animationDuration: DrawerDefaults.FALLBACK_ANIMATION_DURATION,
+  anchor: 'bottom',
+  animationDuration: DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   open: false,
   rootId: DrawerDefaults.FALLBACK_ROOT_ID,
 };
