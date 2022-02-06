@@ -2,25 +2,15 @@ import React, {
   CSSProperties,
   MouseEventHandler,
   ReactNode,
+  ReactPortal,
+  useCallback,
   useEffect,
-  useRef,
+  useMemo,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { useInjectStyle } from 'use-inject-style';
-
-interface DrawerProps {
-  animationDuration?: number;
-  children: ReactNode;
-  open?: boolean;
-  maxHeight?: number;
-  rootId?: 'root' | string;
-  onOverlayClick: MouseEventHandler<HTMLDivElement>;
-}
 
 const BASE_Z_INDEX = 9999;
-const OPEN_ANIMATION_NAME = 'drawer-open-animation';
-const CLOSE_ANIMATION_NAME = 'drawer-close-animation';
 
 const wrapperStyles: CSSProperties = {
   position: 'fixed',
@@ -45,6 +35,15 @@ const baseContainerStyles: CSSProperties = {
   paddingBottom: '1rem',
 };
 
+export interface DrawerProps {
+  animationDuration?: number;
+  children: ReactNode;
+  open?: boolean;
+  maxHeight?: number;
+  rootId?: 'root' | string;
+  onOverlayClick: MouseEventHandler<HTMLDivElement>;
+}
+
 export function Drawer({
   animationDuration = 0.3,
   children,
@@ -52,58 +51,45 @@ export function Drawer({
   maxHeight = 350,
   rootId = 'root',
   onOverlayClick,
-}: DrawerProps): JSX.Element | null {
-  const { inject } = useInjectStyle('drawer-styles');
+}: DrawerProps): ReactPortal | null {
+  const [show, setShow] = useState<boolean>(false);
+  const [animationStyles, setAnimationStyles] = useState<CSSProperties>({
+    bottom: '-100%',
+  });
 
-  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [animation, setAnimation] = useState<string | null>(null);
-  const [closeAnimationFinished, setCloseAnimationFinished] = useState<
-    boolean | null
-  >(null);
+  // get root element to create portal
+  const rootElement = useMemo<HTMLElement | null>(() => {
+    return document.getElementById(rootId);
+  }, [rootId]);
 
-  // animation change effect
+  // handles transition end unmounting
+  const handleTransitionEnd = useCallback(() => {
+    if (open) return;
+
+    setShow(false);
+  }, [open]);
+
+  // open prop change effect
   useEffect(() => {
-    let timeout: NodeJS.Timeout | null = null;
+    let timeout: NodeJS.Timeout | undefined = undefined;
 
     if (!open) {
-      if (!animationTimeoutRef.current) {
-        timeout = setTimeout(() => {
-          setCloseAnimationFinished(true);
-        }, animationDuration * 1000);
-        animationTimeoutRef.current = timeout;
-      }
+      setAnimationStyles({ transform: 'translateY(100%)' });
 
-      setAnimation(`${CLOSE_ANIMATION_NAME} ${animationDuration}s forwards`);
-    } else {
-      setAnimation(`${OPEN_ANIMATION_NAME} ${animationDuration}s forwards`);
+      return;
     }
+
+    setShow(true);
+    timeout = setTimeout(() => {
+      setAnimationStyles({ transform: 'translateY(0)' });
+    }, 25);
 
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [animationDuration, open]);
+  }, [open]);
 
-  // inject animation styles
-  useEffect(() => {
-    inject(`
-      @keyframes ${OPEN_ANIMATION_NAME} {
-        0% { bottom: -${maxHeight}px; }
-        100% { bottom: 0px; }
-      }
-    `);
-    inject(`
-      @keyframes ${CLOSE_ANIMATION_NAME} {
-        0% { bottom: 0px; }
-        100% { bottom: -${maxHeight}px; }
-      }
-    `);
-  }, [inject, maxHeight]);
-
-  // do not render if not open and nullify element after close animation finish
-  if (!open && closeAnimationFinished) return null;
-
-  // get root element to create portal
-  const rootElement = document.getElementById(rootId);
+  if (!show) return null;
   if (!rootElement) return null;
 
   return createPortal(
@@ -112,9 +98,11 @@ export function Drawer({
         style={{
           ...baseContainerStyles,
           maxHeight: `${maxHeight}px`,
-          bottom: `-${maxHeight}px`,
-          ...(animation && { animation }),
+          bottom: '0px',
+          transition: `transform ${animationDuration * 1000}ms ease-in-out`,
+          ...animationStyles,
         }}
+        onTransitionEnd={handleTransitionEnd}
       >
         {children}
       </div>

@@ -1,6 +1,6 @@
-import React, { FC, MouseEvent, useCallback, useState } from 'react';
+import { MouseEvent, ReactPortal, useCallback, useState } from 'react';
 
-import { Drawer } from './Drawer';
+import { Drawer, DrawerProps } from './Drawer';
 import { usePreventScroll } from './usePreventScroll';
 
 interface DrawerOptions {
@@ -11,7 +11,8 @@ interface DrawerOptions {
 }
 
 export function useDrawer(options?: DrawerOptions): {
-  DrawerWrapper: FC<{ children: React.ReactNode }>;
+  DrawerWrapper: (props: DrawerProps) => ReactPortal | null;
+  drawerProps: Omit<DrawerProps, 'children'>;
   openDrawer: () => void;
   closeDrawer: () => void;
   open: boolean;
@@ -47,24 +48,14 @@ export function useDrawer(options?: DrawerOptions): {
     [closeOnOverlayClick, handleDrawerClose],
   );
 
-  const DrawerWrapper = useCallback(
-    ({ children }) => {
-      return (
-        <Drawer
-          animationDuration={animationDuration}
-          open={open}
-          rootId={rootId}
-          onOverlayClick={handleOverlayClick}
-        >
-          {children}
-        </Drawer>
-      );
-    },
-    [animationDuration, handleOverlayClick, open, rootId],
-  );
-
   return {
-    DrawerWrapper,
+    DrawerWrapper: Drawer,
+    drawerProps: {
+      animationDuration,
+      open,
+      rootId,
+      onOverlayClick: handleOverlayClick,
+    },
     openDrawer: handleDrawerOpen,
     closeDrawer: handleDrawerClose,
     open,
