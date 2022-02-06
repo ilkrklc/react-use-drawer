@@ -10,46 +10,22 @@ import React, {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-const BASE_Z_INDEX = 9999;
-
-const wrapperStyles: CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-  zIndex: BASE_Z_INDEX,
-  backgroundColor: 'transparent',
-};
-
-const baseContainerStyles: CSSProperties = {
-  position: 'fixed',
-  boxSizing: 'border-box',
-  backgroundColor: '#ffffff',
-  overflowY: 'auto',
-  height: '100%',
-  width: '100%',
-  boxShadow: '0px 10px 40px 0px rgb(0 0 0 / 80%)',
-  zIndex: BASE_Z_INDEX + 1,
-  paddingTop: '1rem',
-  paddingBottom: '1rem',
-};
+import { DrawerDefaults } from './Drawer.defaults';
+import { wrapperStyles, baseContainerStyles } from './Drawer.styles';
 
 export interface DrawerProps {
   animationDuration?: number;
   children: ReactNode;
   open?: boolean;
-  maxHeight?: number;
-  rootId?: 'root' | string;
+  rootId?: typeof DrawerDefaults.FALLBACK_ROOT_ID;
   onOverlayClick: MouseEventHandler<HTMLDivElement>;
 }
 
 export function Drawer({
-  animationDuration = 0.3,
+  animationDuration = DrawerDefaults.FALLBACK_ANIMATION_DURATION,
   children,
   open = false,
-  maxHeight = 350,
-  rootId = 'root',
+  rootId = DrawerDefaults.FALLBACK_ROOT_ID,
   onOverlayClick,
 }: DrawerProps): ReactPortal | null {
   const [show, setShow] = useState<boolean>(false);
@@ -97,7 +73,7 @@ export function Drawer({
       <div
         style={{
           ...baseContainerStyles,
-          maxHeight: `${maxHeight}px`,
+          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
           bottom: '0px',
           transition: `transform ${animationDuration * 1000}ms ease-in-out`,
           ...animationStyles,
@@ -112,8 +88,7 @@ export function Drawer({
 }
 
 Drawer.defaultProps = {
-  animationDuration: 0.3,
+  animationDuration: DrawerDefaults.FALLBACK_ANIMATION_DURATION,
   open: false,
-  rootId: 'root',
-  maxHeight: 350,
+  rootId: DrawerDefaults.FALLBACK_ROOT_ID,
 };
