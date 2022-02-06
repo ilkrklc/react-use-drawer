@@ -37,19 +37,16 @@ export function Drawer({
     bottom: '-100%',
   });
 
-  // get root element to create portal
   const rootElement = useMemo<HTMLElement | null>(() => {
     return document.getElementById(rootId);
   }, [rootId]);
 
-  // handles transition end unmounting
   const handleTransitionEnd = useCallback(() => {
     if (open) return;
 
     setShow(false);
   }, [open]);
 
-  // open prop change effect
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined = undefined;
 
