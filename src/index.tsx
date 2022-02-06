@@ -1,26 +1,86 @@
-import React, { FC, MouseEvent, useCallback, useState } from 'react';
+import { MouseEvent, ReactPortal, useCallback, useState } from 'react';
 
-import { Drawer } from './Drawer';
+import { Drawer, DrawerProps } from './Drawer';
 import { usePreventScroll } from './usePreventScroll';
+import { DrawerDefaults } from './Drawer.defaults';
 
 interface DrawerOptions {
+  /**
+   * @property {'bottom' | 'left' | 'right' | 'top' | undefined} [anchor='bottom'] - Side from which the drawer will appear
+   */
+  anchor?: 'bottom' | 'left' | 'right' | 'top';
+  /**
+   * @property {number | undefined} [animationDuration=300] - Animation duration in milliseconds
+   */
   animationDuration?: number;
-  preventScroll?: boolean;
+  /**
+   * @property {boolean | undefined} [closeOnOverlayClick=true] - Handle to close drawer on overlay click event
+   */
   closeOnOverlayClick?: boolean;
-  rootId?: 'root' | string;
+  /**
+   * @property {(() => void) | undefined} onClose - On close event handler
+   */
+  onClose?: () => void;
+  /**
+   * @property {(() => void) | undefined} onOpen - On open event handler
+   */
+  onOpen?: () => void;
+  /**
+   * @property {boolean | undefined} [preventScroll=true] - Handle to prevent scroll when drawer is open
+   */
+  preventScroll?: boolean;
+  /**
+   * @property {string | undefined} [rootId='root'] - Root dom node identifier to mount drawer component
+   */
+  rootId?: string;
 }
 
-export function useDrawer(options?: DrawerOptions): {
-  DrawerWrapper: FC<{ children: React.ReactNode }>;
+type DrawerReturnProps = Omit<DrawerProps, 'children'>;
+
+interface UseDrawer {
+  /**
+   * @property {(props: DrawerProps) => ReactPortal | null} DrawerWrapper - Drawer wrapper component
+   */
+  DrawerWrapper: (props: DrawerProps) => ReactPortal | null;
+  /**
+   * @property {Omit<DrawerProps, 'children'>} drawerProps - Drawer props
+   * Drawer props needs to be exported and re-used at exported drawer wrapper to prevent react from creating a new hook on every rendering
+   *
+   * More info:
+   *
+   * https://dev.to/droopytersen/new-react-hooks-pattern-return-a-component-31bh
+   *
+   * https://www.reddit.com/r/reactjs/comments/9yq1l8/comment/ea3q7dt/?utm_source=share&utm_medium=web2x&context=3
+   */
+  drawerProps: DrawerReturnProps;
+  /**
+   * @property {() => void} openDrawer - Open drawer function
+   */
   openDrawer: () => void;
+  /**
+   * @property {() => void} closeDrawer - Close drawer function
+   */
   closeDrawer: () => void;
+  /**
+   * @property {boolean} open - Drawer open state indicator
+   */
   open: boolean;
-} {
+}
+
+/**
+ * Hook to inject a drawer component in provided root identifier
+ * @param options - Drawer options
+ * @returns {UseDrawer} - Drawer wrapper component, props and handler functions
+ */
+export function useDrawer(options?: DrawerOptions): UseDrawer {
   const {
-    animationDuration = 0.3,
+    anchor = 'bottom',
+    animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
     closeOnOverlayClick = true,
+    onClose,
+    onOpen,
     preventScroll = true,
-    rootId = 'root',
+    rootId = DrawerDefaults.FALLBACK_ROOT_ID,
   } = options || {};
 
   const [open, setOpen] = useState<boolean>(false);
@@ -47,24 +107,17 @@ export function useDrawer(options?: DrawerOptions): {
     [closeOnOverlayClick, handleDrawerClose],
   );
 
-  const DrawerWrapper = useCallback(
-    ({ children }) => {
-      return (
-        <Drawer
-          animationDuration={animationDuration}
-          open={open}
-          rootId={rootId}
-          onOverlayClick={handleOverlayClick}
-        >
-          {children}
-        </Drawer>
-      );
-    },
-    [animationDuration, handleOverlayClick, open, rootId],
-  );
-
   return {
-    DrawerWrapper,
+    DrawerWrapper: Drawer,
+    drawerProps: {
+      anchor,
+      animationDuration,
+      onOverlayClick: handleOverlayClick,
+      onClose,
+      onOpen,
+      open,
+      rootId,
+    },
     openDrawer: handleDrawerOpen,
     closeDrawer: handleDrawerClose,
     open,

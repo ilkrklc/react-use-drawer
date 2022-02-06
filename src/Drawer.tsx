@@ -2,119 +2,138 @@ import React, {
   CSSProperties,
   MouseEventHandler,
   ReactNode,
+  ReactPortal,
+  useCallback,
   useEffect,
-  useRef,
+  useMemo,
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { useInjectStyle } from 'use-inject-style';
 
-interface DrawerProps {
+import { DrawerDefaults } from './Drawer.defaults';
+import {
+  wrapperStyles,
+  baseContainerStyles,
+  overlayStyles,
+} from './Drawer.styles';
+
+export interface DrawerProps {
+  anchor?: 'bottom' | 'left' | 'right' | 'top';
   animationDuration?: number;
   children: ReactNode;
-  open?: boolean;
-  maxHeight?: number;
-  rootId?: 'root' | string;
+  onClose?: () => void;
+  onOpen?: () => void;
   onOverlayClick: MouseEventHandler<HTMLDivElement>;
+  open?: boolean;
+  rootId?: typeof DrawerDefaults.FALLBACK_ROOT_ID;
 }
 
-const BASE_Z_INDEX = 9999;
-const OPEN_ANIMATION_NAME = 'drawer-open-animation';
-const CLOSE_ANIMATION_NAME = 'drawer-close-animation';
-
-const wrapperStyles: CSSProperties = {
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  bottom: 0,
-  right: 0,
-  zIndex: BASE_Z_INDEX,
-  backgroundColor: 'transparent',
-};
-
-const baseContainerStyles: CSSProperties = {
-  position: 'fixed',
-  boxSizing: 'border-box',
-  backgroundColor: '#ffffff',
-  overflowY: 'auto',
-  height: '100%',
-  width: '100%',
-  boxShadow: '0px 10px 40px 0px rgb(0 0 0 / 80%)',
-  zIndex: BASE_Z_INDEX + 1,
-  paddingTop: '1rem',
-  paddingBottom: '1rem',
-};
-
 export function Drawer({
-  animationDuration = 0.3,
+  anchor = 'bottom',
+  animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   children,
-  open = false,
-  maxHeight = 350,
-  rootId = 'root',
+  onClose,
+  onOpen,
   onOverlayClick,
-}: DrawerProps): JSX.Element | null {
-  const { inject } = useInjectStyle('drawer-styles');
+  open = false,
+  rootId = DrawerDefaults.FALLBACK_ROOT_ID,
+}: DrawerProps): ReactPortal | null {
+  const parsedAnimationStyles = useMemo<CSSProperties>(() => {
+    const parsedAnimationDuration =
+      animationDuration < DrawerDefaults.ANIMATION_DURATION.MIN
+        ? DrawerDefaults.ANIMATION_DURATION.MIN
+        : animationDuration;
+    const animationDurationDelta = open
+      ? parsedAnimationDuration - DrawerDefaults.ANIMATION_DURATION.DELAY
+      : parsedAnimationDuration;
+    const baseAnimationStyles: CSSProperties = {
+      transition: `transform ${animationDurationDelta}ms ease-in-out`,
+    };
 
-  const animationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const [animation, setAnimation] = useState<string | null>(null);
-  const [closeAnimationFinished, setCloseAnimationFinished] = useState<
-    boolean | null
-  >(null);
+    switch (anchor) {
+      case 'bottom':
+        return {
+          ...baseAnimationStyles,
+          bottom: '0px',
+          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+          transform: `translateY(${open ? '0' : '100%'})`,
+        };
+      case 'left':
+        return {
+          ...baseAnimationStyles,
+          left: '0px',
+          maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
+          transform: `translateX(${open ? '0' : '-100%'})`,
+        };
+      case 'right':
+        return {
+          ...baseAnimationStyles,
+          right: '0px',
+          maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
+          transform: `translateX(${open ? '0' : '100%'})`,
+        };
+      case 'top':
+        return {
+          ...baseAnimationStyles,
+          top: '0px',
+          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+          transform: `translateY(${open ? '0' : '-100%'})`,
+        };
+      default:
+        return { ...baseAnimationStyles };
+    }
+  }, [anchor, animationDuration, open]);
 
-  // animation change effect
+  const [show, setShow] = useState<boolean>(false);
+  const [animationStyles, setAnimationStyles] = useState<CSSProperties>(
+    parsedAnimationStyles,
+  );
+
+  const rootElement = useMemo<HTMLElement | null>(() => {
+    return document.getElementById(rootId);
+  }, [rootId]);
+
+  const handleTransitionEnd = useCallback(() => {
+    if (open) {
+      if (onOpen) onOpen();
+      return;
+    }
+
+    setShow(false);
+    if (onClose) onClose();
+  }, [onClose, onOpen, open]);
+
   useEffect(() => {
-    let timeout: NodeJS.Timeout | null = null;
+    let timeout: NodeJS.Timeout | undefined = undefined;
 
     if (!open) {
-      if (!animationTimeoutRef.current) {
-        timeout = setTimeout(() => {
-          setCloseAnimationFinished(true);
-        }, animationDuration * 1000);
-        animationTimeoutRef.current = timeout;
-      }
+      setAnimationStyles(parsedAnimationStyles);
 
-      setAnimation(`${CLOSE_ANIMATION_NAME} ${animationDuration}s forwards`);
-    } else {
-      setAnimation(`${OPEN_ANIMATION_NAME} ${animationDuration}s forwards`);
+      return;
     }
+
+    setShow(true);
+    timeout = setTimeout(() => {
+      setAnimationStyles(parsedAnimationStyles);
+    }, DrawerDefaults.ANIMATION_DURATION.DELAY);
 
     return () => {
       if (timeout) clearTimeout(timeout);
     };
-  }, [animationDuration, open]);
+  }, [open, parsedAnimationStyles]);
 
-  // inject animation styles
-  useEffect(() => {
-    inject(`
-      @keyframes ${OPEN_ANIMATION_NAME} {
-        0% { bottom: -${maxHeight}px; }
-        100% { bottom: 0px; }
-      }
-    `);
-    inject(`
-      @keyframes ${CLOSE_ANIMATION_NAME} {
-        0% { bottom: 0px; }
-        100% { bottom: -${maxHeight}px; }
-      }
-    `);
-  }, [inject, maxHeight]);
-
-  // do not render if not open and nullify element after close animation finish
-  if (!open && closeAnimationFinished) return null;
-
-  // get root element to create portal
-  const rootElement = document.getElementById(rootId);
+  if (!show) return null;
   if (!rootElement) return null;
 
   return createPortal(
-    <div role="dialog" style={wrapperStyles} onClick={onOverlayClick}>
+    <div role="dialog" style={wrapperStyles}>
+      <div onClick={onOverlayClick} style={overlayStyles} />
       <div
         style={{
           ...baseContainerStyles,
-          maxHeight: `${maxHeight}px`,
-          bottom: `-${maxHeight}px`,
-          ...(animation && { animation }),
+          ...animationStyles,
         }}
+        onTransitionEnd={handleTransitionEnd}
       >
         {children}
       </div>
@@ -124,8 +143,8 @@ export function Drawer({
 }
 
 Drawer.defaultProps = {
-  animationDuration: 0.3,
+  anchor: 'bottom',
+  animationDuration: DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   open: false,
-  rootId: 'root',
-  maxHeight: 350,
+  rootId: DrawerDefaults.FALLBACK_ROOT_ID,
 };
