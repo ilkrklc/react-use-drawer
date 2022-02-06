@@ -67,7 +67,7 @@ interface UseDrawer {
 export function useDrawer(options?: DrawerOptions): UseDrawer {
   const {
     anchor = 'bottom',
-    animationDuration = DrawerDefaults.FALLBACK_ANIMATION_DURATION,
+    animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
     closeOnOverlayClick = true,
     preventScroll = true,
     rootId = DrawerDefaults.FALLBACK_ROOT_ID,
