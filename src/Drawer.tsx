@@ -80,7 +80,7 @@ export function Drawer({
           ...baseContainerStyles,
           maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
           bottom: '0px',
-          transition: `transform ${animationDuration * 1000}ms ease-in-out`,
+          transition: `transform ${animationDuration}ms ease-in-out`,
           ...animationStyles,
         }}
         onTransitionEnd={handleTransitionEnd}
