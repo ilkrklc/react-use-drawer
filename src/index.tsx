@@ -14,13 +14,21 @@ interface DrawerOptions {
    */
   animationDuration?: number;
   /**
-   * @property {boolean | undefined} [preventScroll=true] - Handle to prevent scroll when drawer is open
-   */
-  preventScroll?: boolean;
-  /**
    * @property {boolean | undefined} [closeOnOverlayClick=true] - Handle to close drawer on overlay click event
    */
   closeOnOverlayClick?: boolean;
+  /**
+   * @property {(() => void) | undefined} onClose - On close event handler
+   */
+  onClose?: () => void;
+  /**
+   * @property {(() => void) | undefined} onOpen - On open event handler
+   */
+  onOpen?: () => void;
+  /**
+   * @property {boolean | undefined} [preventScroll=true] - Handle to prevent scroll when drawer is open
+   */
+  preventScroll?: boolean;
   /**
    * @property {string | undefined} [rootId='root'] - Root dom node identifier to mount drawer component
    */
@@ -69,6 +77,8 @@ export function useDrawer(options?: DrawerOptions): UseDrawer {
     anchor = 'bottom',
     animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
     closeOnOverlayClick = true,
+    onClose,
+    onOpen,
     preventScroll = true,
     rootId = DrawerDefaults.FALLBACK_ROOT_ID,
   } = options || {};
@@ -102,9 +112,11 @@ export function useDrawer(options?: DrawerOptions): UseDrawer {
     drawerProps: {
       anchor,
       animationDuration,
+      onOverlayClick: handleOverlayClick,
+      onClose,
+      onOpen,
       open,
       rootId,
-      onOverlayClick: handleOverlayClick,
     },
     openDrawer: handleDrawerOpen,
     closeDrawer: handleDrawerClose,
