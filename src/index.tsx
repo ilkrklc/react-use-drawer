@@ -2,12 +2,13 @@ import { MouseEvent, ReactPortal, useCallback, useState } from 'react';
 
 import { Drawer, DrawerProps } from './Drawer';
 import { usePreventScroll } from './usePreventScroll';
+import { DrawerDefaults } from './Drawer.defaults';
 
 interface DrawerOptions {
   animationDuration?: number;
   preventScroll?: boolean;
   closeOnOverlayClick?: boolean;
-  rootId?: 'root' | string;
+  rootId?: typeof DrawerDefaults.FALLBACK_ROOT_ID;
 }
 
 export function useDrawer(options?: DrawerOptions): {
@@ -18,10 +19,10 @@ export function useDrawer(options?: DrawerOptions): {
   open: boolean;
 } {
   const {
-    animationDuration = 0.3,
+    animationDuration = DrawerDefaults.FALLBACK_ANIMATION_DURATION,
     closeOnOverlayClick = true,
     preventScroll = true,
-    rootId = 'root',
+    rootId = DrawerDefaults.FALLBACK_ROOT_ID,
   } = options || {};
 
   const [open, setOpen] = useState<boolean>(false);
