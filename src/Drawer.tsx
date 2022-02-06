@@ -21,18 +21,22 @@ export interface DrawerProps {
   anchor?: 'bottom' | 'left' | 'right' | 'top';
   animationDuration?: number;
   children: ReactNode;
+  onClose?: () => void;
+  onOpen?: () => void;
+  onOverlayClick: MouseEventHandler<HTMLDivElement>;
   open?: boolean;
   rootId?: typeof DrawerDefaults.FALLBACK_ROOT_ID;
-  onOverlayClick: MouseEventHandler<HTMLDivElement>;
 }
 
 export function Drawer({
   anchor = 'bottom',
   animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   children,
+  onClose,
+  onOpen,
+  onOverlayClick,
   open = false,
   rootId = DrawerDefaults.FALLBACK_ROOT_ID,
-  onOverlayClick,
 }: DrawerProps): ReactPortal | null {
   const parsedAnimationStyles = useMemo<CSSProperties>(() => {
     const parsedAnimationDuration =
@@ -90,10 +94,14 @@ export function Drawer({
   }, [rootId]);
 
   const handleTransitionEnd = useCallback(() => {
-    if (open) return;
+    if (open) {
+      if (onOpen) onOpen();
+      return;
+    }
 
     setShow(false);
-  }, [open]);
+    if (onClose) onClose();
+  }, [onClose, onOpen, open]);
 
   useEffect(() => {
     let timeout: NodeJS.Timeout | undefined = undefined;
