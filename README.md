@@ -5,7 +5,34 @@ A react hook to inject drawer component on demand.
 ## Usage
 
 ```javascript
+import React, { useState, useCallback } from 'react';
+import { render } from 'react-dom';
+import { useDrawer } from 'react-use-drawer';
 
+const App = () => {
+  const { DrawerWrapper, drawerProps, openDrawer, closeDrawer, open } =
+    useDrawer({
+      animationDuration: 500,
+      anchor: 'bottom',
+      onOpen: () => console.log('OPEN'),
+      onClose: () => console.log('CLOSE'),
+    });
+
+  return (
+    <div className="App">
+      <div>Drawer - {open}</div>
+      <br />
+      <button type="button" onClick={openDrawer}>
+        Open Drawer
+      </button>
+      <button type="button" onClick={closeDrawer}>
+        Close Drawer
+      </button>
+      <DrawerWrapper {...drawerProps}>Drawer Content</DrawerWrapper>
+    </div>
+  );
+};
+render(<App />, document.getElementById('root'));
 ```
 
 ## Contributing
