@@ -6,6 +6,10 @@ import { DrawerDefaults } from './Drawer.defaults';
 
 interface DrawerOptions {
   /**
+   * @property {'bottom' | 'left' | 'right' | 'top' | undefined} [anchor='bottom'] - Side from which the drawer will appear
+   */
+  anchor?: 'bottom' | 'left' | 'right' | 'top';
+  /**
    * @property {number | undefined} [animationDuration=300] - Animation duration in milliseconds
    */
   animationDuration?: number;
@@ -23,6 +27,8 @@ interface DrawerOptions {
   rootId?: string;
 }
 
+type DrawerReturnProps = Omit<DrawerProps, 'children'>;
+
 interface UseDrawer {
   /**
    * @property {(props: DrawerProps) => ReactPortal | null} DrawerWrapper - Drawer wrapper component
@@ -38,7 +44,7 @@ interface UseDrawer {
    *
    * https://www.reddit.com/r/reactjs/comments/9yq1l8/comment/ea3q7dt/?utm_source=share&utm_medium=web2x&context=3
    */
-  drawerProps: Omit<DrawerProps, 'children'>;
+  drawerProps: DrawerReturnProps;
   /**
    * @property {() => void} openDrawer - Open drawer function
    */
@@ -60,6 +66,7 @@ interface UseDrawer {
  */
 export function useDrawer(options?: DrawerOptions): UseDrawer {
   const {
+    anchor = 'bottom',
     animationDuration = DrawerDefaults.FALLBACK_ANIMATION_DURATION,
     closeOnOverlayClick = true,
     preventScroll = true,
@@ -93,6 +100,7 @@ export function useDrawer(options?: DrawerOptions): UseDrawer {
   return {
     DrawerWrapper: Drawer,
     drawerProps: {
+      anchor,
       animationDuration,
       open,
       rootId,
