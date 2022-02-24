@@ -17,8 +17,17 @@ import {
   overlayStyles,
 } from './Drawer.styles';
 
+export type DrawerPositioning =
+  | {
+      anchor: 'left' | 'right';
+      width?: string;
+    }
+  | {
+      anchor: 'bottom' | 'top';
+      height?: string;
+    };
+
 export interface DrawerProps {
-  anchor?: 'bottom' | 'left' | 'right' | 'top';
   animationDuration?: number;
   children: ReactNode;
   onClose?: () => void;
@@ -26,11 +35,11 @@ export interface DrawerProps {
   onOverlayClick: MouseEventHandler<HTMLDivElement>;
   open?: boolean;
   overlayColor?: string;
+  positioning?: DrawerPositioning;
   rootId?: typeof DrawerDefaults.FALLBACK_ROOT_ID;
 }
 
 export function Drawer({
-  anchor = 'bottom',
   animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   children,
   onClose,
@@ -38,6 +47,10 @@ export function Drawer({
   onOverlayClick,
   open = false,
   overlayColor = 'transparent',
+  positioning = {
+    anchor: 'bottom',
+    height: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+  },
   rootId = DrawerDefaults.FALLBACK_ROOT_ID,
 }: DrawerProps): ReactPortal | null {
   const parsedAnimationStyles = useMemo<CSSProperties>(() => {
@@ -52,13 +65,14 @@ export function Drawer({
       transition: `transform ${animationDurationDelta}ms ease-in-out`,
     };
 
-    switch (anchor) {
+    switch (positioning.anchor) {
       case 'bottom':
         return {
           ...baseAnimationStyles,
           bottom: '0px',
           left: '0px',
-          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+          maxHeight:
+            positioning.height || DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
           transform: `translateY(${open ? '0' : '100%'})`,
         };
       case 'left':
@@ -66,7 +80,8 @@ export function Drawer({
           ...baseAnimationStyles,
           top: '0px',
           left: '0px',
-          maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
+          maxWidth:
+            positioning.width || DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
           transform: `translateX(${open ? '0' : '-100%'})`,
         };
       case 'right':
@@ -74,7 +89,8 @@ export function Drawer({
           ...baseAnimationStyles,
           top: '0px',
           right: '0px',
-          maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
+          maxWidth:
+            positioning.width || DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
           transform: `translateX(${open ? '0' : '100%'})`,
         };
       case 'top':
@@ -82,13 +98,14 @@ export function Drawer({
           ...baseAnimationStyles,
           top: '0px',
           left: '0px',
-          maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+          maxHeight:
+            positioning.height || DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
           transform: `translateY(${open ? '0' : '-100%'})`,
         };
       default:
         return { ...baseAnimationStyles };
     }
-  }, [anchor, animationDuration, open]);
+  }, [positioning, animationDuration, open]);
 
   const [show, setShow] = useState<boolean>(false);
   const [animationStyles, setAnimationStyles] = useState<CSSProperties>(
@@ -152,9 +169,12 @@ export function Drawer({
 }
 
 Drawer.defaultProps = {
-  anchor: 'bottom',
   animationDuration: DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   open: false,
   overlayColor: 'transparent',
+  positioning: {
+    anchor: 'bottom',
+    height: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+  },
   rootId: DrawerDefaults.FALLBACK_ROOT_ID,
 };

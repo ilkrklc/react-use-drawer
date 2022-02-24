@@ -1,14 +1,10 @@
 import { MouseEvent, ReactPortal, useCallback, useState } from 'react';
 
-import { Drawer, DrawerProps } from './Drawer';
+import { Drawer, DrawerProps, DrawerPositioning } from './Drawer';
 import { usePreventScroll } from './usePreventScroll';
 import { DrawerDefaults } from './Drawer.defaults';
 
 interface DrawerOptions {
-  /**
-   * @property {'bottom' | 'left' | 'right' | 'top' | undefined} [anchor='bottom'] - Side from which the drawer will appear
-   */
-  anchor?: 'bottom' | 'left' | 'right' | 'top';
   /**
    * @property {number | undefined} [animationDuration=300] - Animation duration in milliseconds
    */
@@ -30,6 +26,11 @@ interface DrawerOptions {
    * @example 'transparent', 'rgba(0, 0, 0, 0.2)', '#ffffff'
    */
   overlayColor?: string;
+  /**
+   * @property {string | undefined} [overlayColor='transparent'] - Overlay background color
+   * @example 'transparent', 'rgba(0, 0, 0, 0.2)', '#ffffff'
+   */
+  positioning?: DrawerPositioning;
   /**
    * @property {boolean | undefined} [preventScroll=true] - Handle to prevent scroll when drawer is open
    */
@@ -79,7 +80,10 @@ interface UseDrawer {
  */
 export function useDrawer(options?: DrawerOptions): UseDrawer {
   const {
-    anchor = 'bottom',
+    positioning = {
+      anchor: 'bottom',
+      height: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
+    },
     animationDuration = DrawerDefaults.ANIMATION_DURATION.FALLBACK,
     closeOnOverlayClick = true,
     onClose,
@@ -116,7 +120,7 @@ export function useDrawer(options?: DrawerOptions): UseDrawer {
   return {
     DrawerWrapper: Drawer,
     drawerProps: {
-      anchor,
+      positioning,
       animationDuration,
       onOverlayClick: handleOverlayClick,
       onClose,
