@@ -55,12 +55,14 @@ export function Drawer({
         return {
           ...baseAnimationStyles,
           bottom: '0px',
+          left: '0px',
           maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
           transform: `translateY(${open ? '0' : '100%'})`,
         };
       case 'left':
         return {
           ...baseAnimationStyles,
+          top: '0px',
           left: '0px',
           maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
           transform: `translateX(${open ? '0' : '-100%'})`,
@@ -68,6 +70,7 @@ export function Drawer({
       case 'right':
         return {
           ...baseAnimationStyles,
+          top: '0px',
           right: '0px',
           maxWidth: DrawerDefaults.MAX_DRAWER_SIZE.HORIZONTAL,
           transform: `translateX(${open ? '0' : '100%'})`,
@@ -76,6 +79,7 @@ export function Drawer({
         return {
           ...baseAnimationStyles,
           top: '0px',
+          left: '0px',
           maxHeight: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
           transform: `translateY(${open ? '0' : '-100%'})`,
         };
