@@ -26,6 +26,11 @@ interface DrawerOptions {
    */
   onOpen?: () => void;
   /**
+   * @property {string | undefined} [overlayColor='transparent'] - Overlay background color
+   * @example 'transparent', 'rgba(0, 0, 0, 0.2)', '#ffffff'
+   */
+  overlayColor?: string;
+  /**
    * @property {boolean | undefined} [preventScroll=true] - Handle to prevent scroll when drawer is open
    */
   preventScroll?: boolean;
@@ -79,6 +84,7 @@ export function useDrawer(options?: DrawerOptions): UseDrawer {
     closeOnOverlayClick = true,
     onClose,
     onOpen,
+    overlayColor = 'transparent',
     preventScroll = true,
     rootId = DrawerDefaults.FALLBACK_ROOT_ID,
   } = options || {};
@@ -115,6 +121,7 @@ export function useDrawer(options?: DrawerOptions): UseDrawer {
       onOverlayClick: handleOverlayClick,
       onClose,
       onOpen,
+      overlayColor,
       open,
       rootId,
     },

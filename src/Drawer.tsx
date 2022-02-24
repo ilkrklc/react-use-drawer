@@ -25,6 +25,7 @@ export interface DrawerProps {
   onOpen?: () => void;
   onOverlayClick: MouseEventHandler<HTMLDivElement>;
   open?: boolean;
+  overlayColor?: string;
   rootId?: typeof DrawerDefaults.FALLBACK_ROOT_ID;
 }
 
@@ -36,6 +37,7 @@ export function Drawer({
   onOpen,
   onOverlayClick,
   open = false,
+  overlayColor = 'transparent',
   rootId = DrawerDefaults.FALLBACK_ROOT_ID,
 }: DrawerProps): ReactPortal | null {
   const parsedAnimationStyles = useMemo<CSSProperties>(() => {
@@ -131,7 +133,10 @@ export function Drawer({
 
   return createPortal(
     <div role="dialog" style={wrapperStyles}>
-      <div onClick={onOverlayClick} style={overlayStyles} />
+      <div
+        onClick={onOverlayClick}
+        style={{ ...overlayStyles, backgroundColor: overlayColor }}
+      />
       <div
         style={{
           ...baseContainerStyles,
@@ -150,5 +155,6 @@ Drawer.defaultProps = {
   anchor: 'bottom',
   animationDuration: DrawerDefaults.ANIMATION_DURATION.FALLBACK,
   open: false,
+  overlayColor: 'transparent',
   rootId: DrawerDefaults.FALLBACK_ROOT_ID,
 };
