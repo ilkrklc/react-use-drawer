@@ -15,7 +15,6 @@ export const overlayStyles: CSSProperties = {
   height: '100%',
   width: '100%',
   zIndex: DrawerDefaults.BASE_Z_INDEX + 1,
-  backgroundColor: 'transparent',
 };
 
 export const baseContainerStyles: CSSProperties = {
