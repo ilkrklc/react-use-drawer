@@ -27,7 +27,7 @@ interface DrawerOptions {
    */
   overlayColor?: string;
   /**
-   * @property {string | undefined} [overlayColor='transparent'] - Overlay background color
+   * @property {DrawerPositioning | undefined} [positioning={ anchor: 'bottom', height: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL }] - Drawer position settings
    * @example 'transparent', 'rgba(0, 0, 0, 0.2)', '#ffffff'
    */
   positioning?: DrawerPositioning;
