@@ -113,6 +113,8 @@ export function Drawer({
   );
 
   const rootElement = useMemo<HTMLElement | null>(() => {
+    if (typeof document === 'undefined') return null;
+
     return document.getElementById(rootId);
   }, [rootId]);
 
