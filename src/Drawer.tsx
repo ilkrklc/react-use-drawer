@@ -9,12 +9,11 @@ import React, {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
-
 import { DrawerDefaults } from './Drawer.defaults';
 import {
-  wrapperStyles,
   baseContainerStyles,
   overlayStyles,
+  wrapperStyles,
 } from './Drawer.styles';
 
 export type DrawerPositioning =
