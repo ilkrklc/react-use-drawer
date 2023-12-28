@@ -31,7 +31,7 @@ const App = () => {
   const { DrawerWrapper, drawerProps, openDrawer, closeDrawer, open } =
     useDrawer({
       animationDuration: 500,
-      anchor: 'bottom',
+      positioning: { anchor: 'bottom' },
       onOpen: () => console.log('OPEN'),
       onClose: () => console.log('CLOSE'),
     });
