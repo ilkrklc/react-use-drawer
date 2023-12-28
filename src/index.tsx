@@ -1,8 +1,7 @@
-import { MouseEvent, ReactPortal, useCallback, useState } from 'react';
-
-import { Drawer, DrawerProps, DrawerPositioning } from './Drawer';
-import { usePreventScroll } from './usePreventScroll';
+import { useCallback, useState, type MouseEvent, type ReactPortal } from 'react';
+import { Drawer, type DrawerPositioning, type DrawerProps } from './Drawer';
 import { DrawerDefaults } from './Drawer.defaults';
+import { usePreventScroll } from './usePreventScroll';
 
 interface DrawerOptions {
   /**
