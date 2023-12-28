@@ -1,12 +1,12 @@
-import React, {
-  CSSProperties,
-  MouseEventHandler,
-  ReactNode,
-  ReactPortal,
+import {
   useCallback,
   useEffect,
   useMemo,
   useState,
+  type CSSProperties,
+  type MouseEventHandler,
+  type ReactNode,
+  type ReactPortal,
 } from 'react';
 import { createPortal } from 'react-dom';
 import { DrawerDefaults } from './Drawer.defaults';
