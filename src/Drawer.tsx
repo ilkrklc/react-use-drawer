@@ -168,14 +168,3 @@ export function Drawer({
     rootElement,
   );
 }
-
-Drawer.defaultProps = {
-  animationDuration: DrawerDefaults.ANIMATION_DURATION.FALLBACK,
-  open: false,
-  overlayColor: 'transparent',
-  positioning: {
-    anchor: 'bottom',
-    height: DrawerDefaults.MAX_DRAWER_SIZE.VERTICAL,
-  },
-  rootId: DrawerDefaults.FALLBACK_ROOT_ID,
-};
