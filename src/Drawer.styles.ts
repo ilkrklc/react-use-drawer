@@ -1,5 +1,4 @@
-import { CSSProperties } from 'react';
-
+import type { CSSProperties } from 'react';
 import { DrawerDefaults } from './Drawer.defaults';
 
 export const wrapperStyles: CSSProperties = {
