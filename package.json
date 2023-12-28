@@ -1,6 +1,6 @@
 {
   "name": "react-use-drawer",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "A react hook to inject drawer component on demand.",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
