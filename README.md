@@ -1,6 +1,24 @@
-# useDrawer
+# useDrawer ![GitHub](https://img.shields.io/github/license/ilkrklc/react-use-drawer) ![npm version](https://img.shields.io/npm/v/react-use-drawer) ![npm](https://img.shields.io/npm/dw/react-use-drawer) ![npm bundle size](https://img.shields.io/bundlephobia/min/react-use-drawer)
 
-A react hook to inject drawer component on demand.
+## Description
+
+`useDrawer` is a React Hook that allows for the dynamic and on-demand injection of Drawer components into your React application. This is particularly useful for applications that require flexible, context-dependent user interfaces. With this hook, you can easily manage the visibility and content of Drawer components based on application state, user interactions, or other custom conditions, enhancing the overall user experience and interface responsiveness of your application.
+
+## Table of Contents
+
+- [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [Pull Request Guidelines](#pull-request-guidelines)
+- [License](#license)
+
+## Installation
+
+To install `useDrawer` using npm, run the following command:
+
+```bash
+npm i react-use-drawer
+```
 
 ## Usage
 
@@ -37,7 +55,7 @@ render(<App />, document.getElementById('root'));
 
 ## Contributing
 
-Please review [code of conduct](.github/CODE_OF_CONDUCT.md) and [contributing guide](.github/CONTRIBUTING.md) so that you can understand what actions will and will not be tolerated.
+We welcome contributions to `useDrawer`! Please review [code of conduct](.github/CODE_OF_CONDUCT.md) and [contributing guide](.github/CONTRIBUTING.md) so that you can understand what actions will and will not be tolerated.
 
 ### Pull Request Guidelines
 
@@ -52,4 +70,4 @@ Please review [code of conduct](.github/CODE_OF_CONDUCT.md) and [contributing gu
 
 ## License
 
-Divisor is [MIT licensed](./LICENSE).
+`useDrawer` is [MIT licensed](./LICENSE).
