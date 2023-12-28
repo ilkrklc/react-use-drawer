@@ -6,6 +6,6 @@ export default defineConfig({
   sourcemap: true,
   format: ['esm', 'cjs'],
   outDir: 'dist',
-  minify: false,
+  minify: true,
   dts: true,
 });
